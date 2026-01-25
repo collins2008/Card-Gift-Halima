@@ -22,7 +22,6 @@ A personalized digital experience created as a special gift. This project combin
 
 You can view the live project here:  
 [**Click to View Website**](https://collins2008.github.io/Card-Gift-Halima/)
-*(Note: Replace `yourusername` and `repo-name` with your actual GitHub details)*
 
 ## 📂 Project Structure
 
