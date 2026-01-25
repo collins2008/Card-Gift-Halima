@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>System Locked 👾</title>
+    <style>
+        /* --- FONTS --- */
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Poppins:wght@400;600;700&display=swap');
+
+        /* --- GLOBAL VARIABLES --- */
+        :root {
+            --bg-dark: #0a192f;
+            --text-cyan: #64ffda;
+            --bg-pink: #ffe4e1; /* Misty Rose */
+            --text-pink-dark: #d81b60;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark); /* Start Dark */
+            color: var(--text-cyan);
+            overflow: hidden;
+            transition: background-color 0.8s ease, color 0.5s ease;
+        }
+
+        /* Helper to switch to Pink Theme */
+        body.theme-pink {
+            background-color: var(--bg-pink);
+            color: var(--text-pink-dark);
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Hide pages by default */
+        .page { display: none; width: 90%; max-width: 450px; animation: fadeIn 0.6s ease-out; }
+        .active { display: block; }
+
+        /* --- PAGE 1: HACK (Dark Blue) --- */
+        .alien-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+        .hack-title {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            color: var(--text-cyan);
+            text-transform: uppercase;
+        }
+        .hack-sub {
+            font-family: 'Courier Prime', monospace;
+            font-size: 0.9rem;
+            color: #8892b0;
+            margin-bottom: 40px;
+            line-height: 1.5;
+        }
+        .hack-btn {
+            background-color: var(--text-cyan);
+            color: var(--bg-dark);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            padding: 15px 40px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(100, 255, 218, 0.4);
+            transition: transform 0.2s;
+        }
+        .hack-btn:active { transform: scale(0.95); }
+
+        /* --- PAGE 2: YES/NO --- */
+        .identity-header {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #5d102b;
+            margin-bottom: 10px;
+        }
+        .btn-group {
+            position: relative;
+            height: 200px;
+            width: 100%;
+            margin-top: 30px;
+        }
+        .choice-btn {
+            position: absolute;
+            padding: 12px 35px;
+            font-weight: bold;
+            border-radius: 50px;
+            border: 3px solid #333;
+            cursor: pointer;
+            font-size: 1.1rem;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.2);
+            transition: all 0.3s ease; /* Smooth transition for growing */
+        }
+        
+        #yesBtn { 
+            background: #00e676; 
+            color: white; 
+            border-color: #00a152; 
+            left: 50%; 
+            top: 50%; 
+            /* Initial centering */
+            transform: translate(-150%, -50%); 
+            /* Encouraging Pulse Animation */
+            animation: heartbeat 1.5s infinite;
+        }
+
+        #noBtn { 
+            background: #ff1744; 
+            color: white; 
+            border-color: #d50000; 
+            left: 50%; 
+            top: 50%; 
+            transform: translate(50%, -50%); 
+            z-index: 10; 
+        }
+        
+        #big-sticker {
+            position: fixed; left: -300px; bottom: 50px; width: 300px;
+            transition: left 0.3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            z-index: 999;
+            filter: drop-shadow(5px 5px 5px rgba(0,0,0,0.2));
+        }
+
+        /* --- PAGE 3: ROAST TEXT --- */
+        .roast-container {
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+            color: #d81b60;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            background: rgba(255,255,255,0.3);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        /* --- PAGE 4: SWEET BOY OS --- */
+        .os-header {
+            color: #d81b60;
+            margin-bottom: 20px;
+        }
+        .dashboard-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+        }
+        .app-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px 10px;
+            box-shadow: 0 10px 25px rgba(216, 27, 96, 0.1);
+            cursor: pointer;
+            transition: transform 0.1s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 40%; /* 2 items per row */
+        }
+        .app-card:active { transform: scale(0.95); }
+        .app-emoji { font-size: 2rem; margin-bottom: 5px; }
+        .app-name { font-weight: 600; font-size: 0.85rem; color: #333; }
+        .exit-btn {
+            background: #333;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            margin-top: 30px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* --- PAGE 5: PLAYLIST --- */
+        .vibe-header { color: #d81b60; margin-bottom: 5px; font-size: 2rem; font-weight: 800; }
+        .spotify-container {
+            width: 100%;
+            background: transparent;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        .bye-btn {
+            background: #d81b60;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            border: none;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        /* --- MODALS --- */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none; justify-content: center; align-items: center; z-index: 2000;
+        }
+        .modal-content {
+            background: white; width: 85%; max-width: 320px; padding: 30px;
+            border-radius: 25px; text-align: center; position: relative;
+        }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #aaa; }
+        
+        .content-box {
+            width: 100%; height: 350px; /* Taller for screenshots */
+            background: #f5f5f5; border-radius: 15px;
+            margin: 15px 0; display: flex; justify-content: center; align-items: center; overflow: hidden;
+            font-size: 1.2rem; padding: 5px; box-sizing: border-box;
+        }
+        
+        /* Object-fit contain ensures full image is seen */
+        .content-box img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain; 
+        }
+
+        /* ANIMATIONS */
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Pulse for Yes Button */
+        @keyframes heartbeat {
+            0% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7); transform: translate(-150%, -50%) scale(1); }
+            50% { box-shadow: 0 0 0 10px rgba(0, 230, 118, 0); transform: translate(-150%, -50%) scale(1.05); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); transform: translate(-150%, -50%) scale(1); }
+        }
+        .typewriter { font-family: 'Courier Prime', monospace; color: #d81b60; font-size: 1.1rem; }
+
+    </style>
+</head>
+<body>
+
+<img id="big-sticker" src="assets/sticker.jpeg" alt="Funny Sticker">
+
+<div class="container">
+
+    <div id="page1" class="page active">
+        <div class="alien-icon">👾</div>
+        <div class="hack-title">DEVICE HACKED BY A SWEET BOY™</div>
+        <div class="hack-sub">Finish the pages to recover your data.<br>Hehehehehehe</div>
+        <button class="hack-btn" onclick="startApp()">Recover Device</button>
+    </div>
+
+    <div id="page2" class="page">
+        <h1 class="identity-header">Identity Check</h1>
+        <p style="color: #d81b60; font-weight: 500;">Do you like the Sweet Boy?</p><p>try pressing NO first..it has a cute animation</p>
+        
+        <div class="btn-group">
+            <button class="choice-btn" id="yesBtn" onclick="handleYes()">YES</button>
+            <button class="choice-btn" id="noBtn" onclick="moveNo()">NO</button>
+        </div>
+    </div>
+
+    <div id="page3" class="page">
+        <div class="roast-container">
+            You for no press Yes nah...<br>
+            mumu... This is why I dont like you.
+        </div>
+        <div style="font-size: 3rem; margin-top: 20px;">🙄</div>
+    </div>
+
+    <div id="page4" class="page">
+        <div class="os-header">
+            <h2 style="margin:0; font-weight:800; font-size: 1.8rem;">Sweet Boy OS 1.0</h2>
+            <p style="margin:5px 0 0 0; font-size:0.9rem; opacity:0.8;">Welcome back, Halimaa🙈💕</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="app-card" onclick="openModal('modal-serotonin')">
+                <span class="app-emoji">🦆</span>
+                <span class="app-name">Serotonin</span>
+            </div>
+            <div class="app-card" onclick="openModal('modal-blackmail')">
+                <span class="app-emoji">🙊</span>
+                <span class="app-name">Chakamable Moments</span>
+            </div>
+            <div class="app-card" onclick="openModal('modal-jokes')">
+                <span class="app-emoji">🙄</span>
+                <span class="app-name">Dad Jokes</span>
+            </div>
+            <div class="app-card" onclick="openModal('modal-money')">
+                <span class="app-emoji">💸</span>
+                <span class="app-name">Who Pays?</span>
+            </div>
+             <div class="app-card" style="width: 90%" onclick="openModal('modal-contract')">
+                <span class="app-emoji">📜</span>
+                <span class="app-name">Contract</span>
+            </div>
+        </div>
+
+        <button class="exit-btn" onclick="nextPage(5)">Exit System -></button>
+    </div>
+
+    <div id="page5" class="page">
+        <h2 class="vibe-header">Vibe Check</h2>
+        <p style="color: #d81b60;">One last thing...here's a lil gift too</p>
+        
+        <div class="spotify-container">
+            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/3Vtf8pq5hJLJqxykfnhGtw?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+
+        <button class="bye-btn" onclick="nextPage(6)">Okay Bye ->..click for a surprise</button>
+    </div>
+
+    <div id="page6" class="page">
+        <div class="typewriter" id="final-text"></div>
+    </div>
+
+</div>
+
+<div id="modal-serotonin" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal('modal-serotonin')">×</span>
+        <h3>Serotonin</h3>
+        <div class="content-box" id="duck-box">
+             <img src="assets/ducks/duck1.jpeg" alt="Duck">
+        </div>
+        <button class="hack-btn" style="background:#d81b60; color:white; width:100%" onclick="newDuck()">Next Duck</button>
+    </div>
+</div>
+
+<div id="modal-blackmail" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal('modal-blackmail')">×</span>
+        <h3>Chakamable Moments</h3>
+        <div class="content-box" id="chaka-box">
+            <img src="assets/chakamable/chaka1.jpeg" alt="Chaka">
+        </div>
+        <button class="hack-btn" style="background:#d81b60; color:white; width:100%" onclick="newChaka()">Next Photo</button>
+    </div>
+</div>
+
+<div id="modal-jokes" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal('modal-jokes')">×</span>
+        <h3>Dad Jokes 🙄</h3>
+        <div class="content-box" id="joke-box" style="font-size: 1rem;">Tap below</div>
+        <button class="hack-btn" style="background:#d81b60; color:white; width:100%" onclick="newJoke()">Hit Me</button>
+    </div>
+</div>
+
+<div id="modal-contract" class="modal">
+    <div class="modal-content" style="text-align: left;">
+        <span class="close-modal" onclick="closeModal('modal-contract')">×</span>
+        <h3 style="text-align: center">Terms</h3>
+        <ul style="padding-left: 20px; font-size: 0.9rem; color: #333;">
+            <li style="margin-top:5px;">A 20% 'Boyfriend Tax' applies to all your food🙈/li>
+            <li>Reply to Reels within 3-5 business days.</li>
+            <li>No leaving me on 'Read' unless you are asleep.</li>
+            <li>You acknowledge I am the muse for all your art. 🎨</li>
+            <li style="font-weight:bold; color:#0a192f;">Clause: You are legally required to laugh at my jokes.</li>
+
+            
+        </ul>
+        <button class="hack-btn" style="background:green; color:white; width:100%" onclick="closeModal('modal-contract')">I Accept</button>
+    </div>
+</div>
+
+<div id="modal-money" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal('modal-money')">×</span>
+        <h3>Who Pays?</h3>
+        <div class="content-box" id="spin-result" style="font-size:1.3rem; font-weight:bold; color:#333;">???</div>
+        <button class="hack-btn" style="background:#d81b60; color:white; width:100%" onclick="spin()">Spin</button>
+    </div>
+</div>
+
+<script>
+    // --- 1. SETUP ---
+    // UPDATED: All extensions set to .jpeg
+    
+    // DUCK IMAGES (13 DUCKS)
+    const ducks = [
+        "assets/ducks/duck1.png",
+        "assets/ducks/duck2.png",
+        "assets/ducks/duck3.png",
+        "assets/ducks/duck4.png",
+        "assets/ducks/duck5.png",
+        "assets/ducks/duck6.png",
+        "assets/ducks/duck7.png",
+        "assets/ducks/duck8.png",
+        "assets/ducks/duck9.png",
+        "assets/ducks/duck10.png",
+        "assets/ducks/duck11.png",
+        "assets/ducks/duck12.png",
+        "assets/ducks/duck13.png"
+    ];
+    
+    // PHOTOS (17 CHAKAMABLE MOMENTS)
+    const photos = [
+        "assets/chakamable/chaka1.jpeg",
+        "assets/chakamable/chaka2.jpeg",
+        "assets/chakamable/chaka3.jpeg",
+        "assets/chakamable/chaka4.jpeg",
+        "assets/chakamable/chaka5.jpeg",
+        "assets/chakamable/chaka6.jpeg",
+        "assets/chakamable/chaka7.jpeg",
+        "assets/chakamable/chaka8.jpeg",
+        "assets/chakamable/chaka9.jpeg",
+        "assets/chakamable/chaka10.jpeg",
+        "assets/chakamable/chaka11.jpeg",
+        "assets/chakamable/chaka12.jpeg",
+        "assets/chakamable/chaka13.jpeg",
+        "assets/chakamable/chaka14.jpeg",
+        "assets/chakamable/chaka15.jpeg",
+        "assets/chakamable/chaka16.jpeg",
+        "assets/chakamable/chaka17.jpeg"
+    ];
+
+    // DAD JOKES (5 JOKES)
+    const jokes = [
+        "assets/jokes/joke1.jpeg",
+        "assets/jokes/joke2.jpeg",
+        "assets/jokes/joke3.jpeg",
+        "assets/jokes/joke4.jpeg",
+        "assets/jokes/joke5.jpeg"
+    ];
+
+    // STICKER LINK
+    const duckYouSticker = "assets/sticker.jpeg"; 
+    document.getElementById('big-sticker').src = duckYouSticker;
+
+    // --- 2. LOGIC ---
+    function startApp() {
+        document.body.classList.add('theme-pink');
+        nextPage(2);
+    }
+
+    function nextPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('page' + id).classList.add('active');
+        if(id === 6) typeWriter();
+    }
+
+    // YES/NO LOGIC WITH GROWING YES BUTTON
+    let yesScale = 1; // Current scale of the Yes button
+
+    function moveNo() {
+        const btn = document.getElementById('noBtn');
+        const sticker = document.getElementById('big-sticker');
+        
+        // Random move logic
+        const x = (Math.random() - 0.5) * 150;
+        const y = (Math.random() - 0.5) * 150;
+        btn.style.transform = `translate(${x}px, ${y}px)`;
+        
+        // Show Sticker
+        sticker.style.left = "-20px";
+        setTimeout(() => { sticker.style.left = "-300px"; }, 1500);
+
+        // GROW YES BUTTON
+        yesScale += 0.2; // Increase size by 20%
+        const yesBtn = document.getElementById('yesBtn');
+        // We stop the heartbeat animation when it starts growing to prevent glitching
+        yesBtn.style.animation = "none"; 
+        yesBtn.style.transform = `translate(-150%, -50%) scale(${yesScale})`;
+    }
+
+    function handleYes() {
+        nextPage(3);
+        setTimeout(() => { nextPage(4); }, 3500);
+    }
+
+    // MODALS
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    // GENERATORS
+    function newDuck() {
+        const url = ducks[Math.floor(Math.random() * ducks.length)];
+        document.getElementById('duck-box').innerHTML = `<img src="${url}">`;
+    }
+    function newChaka() {
+        const url = photos[Math.floor(Math.random() * photos.length)];
+        document.getElementById('chaka-box').innerHTML = `<img src="${url}">`;
+    }
+    function newJoke() {
+        const item = jokes[Math.floor(Math.random() * jokes.length)];
+        const box = document.getElementById('joke-box');
+        // Check if it's an image file
+        if (item.includes('.jpg') || item.includes('.png') || item.includes('.gif') || item.includes('.jpeg')) {
+            box.innerHTML = `<img src="${item}" alt="Joke">`;
+        } else {
+            box.innerText = item;
+        }
+    }
+
+    // WHO PAYS (FIXED LOGIC)
+    let spins = 0;
+    function spin() {
+        const res = document.getElementById('spin-result');
+        res.innerText = "Spinning...";
+        spins++;
+        
+        setTimeout(() => {
+            if (spins === 1) {
+                // FIRST SPIN
+                res.innerText = "Halima 💸..funds babe🌚";
+            } else if (spins === 2) {
+                // SECOND SPIN
+                res.innerText = "Me... (oops forgot wallet) 🏃‍♂️\nPay up Halima";
+                res.style.fontSize = "1rem"; // Make text smaller to fit
+            } else {
+                // THIRD SPIN +
+                res.innerText = "Me (Generous King..and cos my girl is just a princess) 👑";
+                res.style.fontSize = "1.3rem";
+            }
+        }, 1000);
+    }
+
+    // TYPEWRITER
+    function typeWriter() {
+        const text = "You look nice today, I guess...";
+        const el = document.getElementById('final-text');
+        let i = 0;
+        function type() {
+            if (i < text.length) {
+                el.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(type, 100);
+            }
+        }
+        type();
+    }
+</script>
+
+</body>
+</html>
