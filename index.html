@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>System Locked 👾</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         /* --- FONTS --- */
         @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Poppins:wght@400;600;700&display=swap');
@@ -166,13 +167,16 @@
             padding: 20px 10px;
             box-shadow: 0 10px 25px rgba(216, 27, 96, 0.1);
             cursor: pointer;
-            transition: transform 0.1s;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy hover */
             display: flex;
             flex-direction: column;
             align-items: center;
             width: 40%; /* 2 items per row */
         }
+        /* ADDED: Hover effect to make it feel 10/10 */
+        .app-card:hover { transform: translateY(-5px) scale(1.03); }
         .app-card:active { transform: scale(0.95); }
+        
         .app-emoji { font-size: 2rem; margin-bottom: 5px; }
         .app-name { font-weight: 600; font-size: 0.85rem; color: #333; }
         .exit-btn {
@@ -341,7 +345,7 @@
         <span class="close-modal" onclick="closeModal('modal-serotonin')">×</span>
         <h3>Serotonin</h3>
         <div class="content-box" id="duck-box">
-             <img src="assets/ducks/duck1.jpeg" alt="Duck">
+             <img src="assets/ducks/duck1.png" alt="Duck">
         </div>
         <button class="hack-btn" style="background:#d81b60; color:white; width:100%" onclick="newDuck()">Next Duck</button>
     </div>
@@ -372,15 +376,13 @@
         <span class="close-modal" onclick="closeModal('modal-contract')">×</span>
         <h3 style="text-align: center">Terms</h3>
         <ul style="padding-left: 20px; font-size: 0.9rem; color: #333;">
-            <li style="margin-top:5px;">A 20% 'Boyfriend Tax' applies to all your food🙈/li>
+            <li style="margin-top:5px;">A 20% 'Boyfriend Tax' applies to all your food🙈</li>
             <li>Reply to Reels within 3-5 business days.</li>
             <li>No leaving me on 'Read' unless you are asleep.</li>
             <li>You acknowledge I am the muse for all your art. 🎨</li>
             <li style="font-weight:bold; color:#0a192f;">Clause: You are legally required to laugh at my jokes.</li>
-
-            
         </ul>
-        <button class="hack-btn" style="background:green; color:white; width:100%" onclick="closeModal('modal-contract')">I Accept</button>
+        <button id="contract-btn" class="hack-btn" style="background:green; color:white; width:100%" onclick="signContract()">I Accept</button>
     </div>
 </div>
 
@@ -395,9 +397,10 @@
 
 <script>
     // --- 1. SETUP ---
-    // UPDATED: All extensions set to .jpeg
     
     // DUCK IMAGES (13 DUCKS)
+    // NOTE: I kept these as .png because that's what was in your previous list.
+    // If your files are actually .jpeg, CHANGE THEM HERE!
     const ducks = [
         "assets/ducks/duck1.png",
         "assets/ducks/duck2.png",
@@ -448,7 +451,7 @@
     const duckYouSticker = "assets/sticker.jpeg"; 
     document.getElementById('big-sticker').src = duckYouSticker;
 
-    // --- UPDATED: HELPER FOR SPEED ---
+    // --- HELPER FOR SPEED ---
     function preloadImages(array) {
         if (!array) return;
         array.forEach((src) => {
@@ -462,7 +465,7 @@
         document.body.classList.add('theme-pink');
         nextPage(2);
         
-        // UPDATED: Start downloading all images silently in the background
+        // Start downloading all images silently
         preloadImages(ducks);
         preloadImages(photos);
         preloadImages(jokes);
@@ -472,51 +475,79 @@
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById('page' + id).classList.add('active');
         
-        // UPDATED: Only load Spotify when we hit Page 5 (Vibe Check)
+        // Only load Spotify when we hit Page 5 (Vibe Check)
         if(id === 5) {
             const player = document.getElementById('spotify-player');
-            // Check if it's still waiting to load
             if(player && player.dataset.src) {
-                player.src = player.dataset.src;
-                player.removeAttribute('data-src'); // Clean up
+                player.src = player.dataset.src; 
+                player.removeAttribute('data-src'); 
             }
         }
 
         if(id === 6) typeWriter();
     }
 
-    // YES/NO LOGIC WITH GROWING YES BUTTON
-    let yesScale = 1; // Current scale of the Yes button
+    // YES/NO LOGIC
+    let yesScale = 1; 
 
     function moveNo() {
         const btn = document.getElementById('noBtn');
         const sticker = document.getElementById('big-sticker');
         
-        // Random move logic
         const x = (Math.random() - 0.5) * 150;
         const y = (Math.random() - 0.5) * 150;
         btn.style.transform = `translate(${x}px, ${y}px)`;
         
-        // Show Sticker
         sticker.style.left = "-20px";
         setTimeout(() => { sticker.style.left = "-300px"; }, 1500);
 
-        // GROW YES BUTTON
-        yesScale += 0.2; // Increase size by 20%
+        yesScale += 0.2; 
         const yesBtn = document.getElementById('yesBtn');
-        // We stop the heartbeat animation when it starts growing to prevent glitching
         yesBtn.style.animation = "none"; 
         yesBtn.style.transform = `translate(-150%, -50%) scale(${yesScale})`;
     }
 
     function handleYes() {
         nextPage(3);
+        // UPDATED: 2.5 seconds (Perfect timing)
         setTimeout(() => { nextPage(4); }, 2500);
     }
 
     // MODALS
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    // CONTRACT FUNCTION (CONFETTI)
+    function signContract() {
+        const btn = document.getElementById('contract-btn');
+        
+        // 1. Change text and visual style
+        btn.innerHTML = "SIGNED & SEALED 💍";
+        btn.style.background = "#333";
+        btn.style.cursor = "default";
+        btn.disabled = true;
+
+        // 2. Trigger Confetti Explosion
+        var duration = 3 * 1000;
+        var animationEnd = Date.now() + duration;
+        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+
+        function randomInRange(min, max) {
+          return Math.random() * (max - min) + min;
+        }
+
+        var interval = setInterval(function() {
+          var timeLeft = animationEnd - Date.now();
+          if (timeLeft <= 0) return clearInterval(interval);
+
+          var particleCount = 50 * (timeLeft / duration);
+          confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+          confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+        }, 250);
+        
+        // 3. Close modal automatically after 2.5 seconds
+        setTimeout(() => { closeModal('modal-contract') }, 2500);
+    }
 
     // GENERATORS
     function newDuck() {
@@ -530,7 +561,6 @@
     function newJoke() {
         const item = jokes[Math.floor(Math.random() * jokes.length)];
         const box = document.getElementById('joke-box');
-        // Check if it's an image file
         if (item.includes('.jpg') || item.includes('.png') || item.includes('.gif') || item.includes('.jpeg')) {
             box.innerHTML = `<img src="${item}" alt="Joke">`;
         } else {
@@ -538,7 +568,7 @@
         }
     }
 
-    // WHO PAYS (FIXED LOGIC)
+    // WHO PAYS
     let spins = 0;
     function spin() {
         const res = document.getElementById('spin-result');
@@ -547,14 +577,11 @@
         
         setTimeout(() => {
             if (spins === 1) {
-                // FIRST SPIN
                 res.innerText = "Halima 💸..funds babe🌚";
             } else if (spins === 2) {
-                // SECOND SPIN
                 res.innerText = "Me... (oops forgot wallet) 🏃‍♂️\nPay up Halima";
-                res.style.fontSize = "1rem"; // Make text smaller to fit
+                res.style.fontSize = "1rem"; 
             } else {
-                // THIRD SPIN +
                 res.innerText = "Me (Generous King..and cos my girl is just a princess) 👑";
                 res.style.fontSize = "1.3rem";
             }
@@ -563,7 +590,9 @@
 
     // TYPEWRITER
     function typeWriter() {
-        const text = "You look nice today, I guess...";
+        // THE HYBRID ENDING
+        const text = "Hack Complete. ✅ Truth is, I just wanted to make you smile today. 🥺👉👈 (But don't get it twisted... you are stuck with me now. No refunds. 🔒💕)";
+        
         const el = document.getElementById('final-text');
         let i = 0;
         function type() {
